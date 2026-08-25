@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111111">
+  <meta name="description" content="AI Brief：面向手机阅读的已核验 AI 资讯，追踪 OpenAI、Google、Microsoft、Anthropic 与中国 AI 生态。">
+  <title>AI Brief / 已核验的 AI 资讯</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&display=swap');
+
+    :root {
+      --ink: #111111;
+      --muted: #747474;
+      --line: #d9d9d4;
+      --paper: #f3f3ef;
+      --card: #fbfbf8;
+      --wash: #e8e8e2;
+      --white: #ffffff;
+      --signal: #b8ff37;
+      --red: #ff574d;
+      --shadow: 0 18px 60px rgba(16, 16, 16, .09);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 75% 8%, rgba(184, 255, 55, .18), transparent 19rem),
+        linear-gradient(180deg, #ecece7 0, var(--paper) 32rem, #f8f8f5 100%);
+      font-family: "Space Grotesk", "Noto Sans SC", "PingFang SC", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+    button, input { font: inherit; }
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    .mono { font-family: "DM Mono", monospace; letter-spacing: .04em; }
+
+    .topbar {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      gap: 20px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--signal);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .brand-name { font-size: 14px; font-weight: 700; letter-spacing: .08em; }
+    .top-meta { color: var(--muted); font-size: 11px; text-transform: uppercase; }
+
+    .hero {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(290px, .75fr);
+      gap: 48px;
+      align-items: end;
+      padding: 78px 0 62px;
+      border-bottom: 1px solid var(--ink);
+      overflow: hidden;
+    }
+    .hero:after {
+      content: "";
+      position: absolute;
+      width: 190px;
+      height: 190px;
+      border: 1px solid rgba(17, 17, 17, .16);
+      right: 6%;
+      top: 34%;
+      transform: rotate(45deg);
+      pointer-events: none;
+    }
+    .eyebrow { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 11px; text-transform: uppercase; }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 5px rgba(255, 87, 77, .12); }
+    h1 {
+      max-width: 760px;
+      margin: 18px 0 20px;
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: clamp(42px, 7vw, 88px);
+      line-height: .98;
+      letter-spacing: -.08em;
+      font-weight: 600;
+    }
+    .hero-lede { max-width: 550px; margin: 0; color: #50504d; font-size: 16px; line-height: 1.8; }
+    .hero-side { position: relative; z-index: 1; display: grid; gap: 18px; }
+    .hero-note { padding: 18px; border: 1px solid var(--ink); background: rgba(251, 251, 248, .72); box-shadow: var(--shadow); }
+    .hero-note p { margin: 10px 0 0; font-family: "Noto Serif SC", serif; font-size: 18px; line-height: 1.55; }
+    .hero-note .mono { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
+    .stat { padding: 15px 12px 0 0; border-right: 1px solid var(--line); }
+    .stat:last-child { border-right: 0; padding-left: 12px; }
+    .stat strong { display: block; font-size: 26px; letter-spacing: -.05em; }
+    .stat span { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.4; }
+
+    .toolbar { padding: 24px 0 16px; display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; }
+    .search-wrap { position: relative; }
+    .search-wrap:before { content: "/"; position: absolute; left: 15px; top: 11px; color: var(--muted); font-family: "DM Mono", monospace; }
+    .search {
+      width: 100%;
+      height: 44px;
+      padding: 0 16px 0 32px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.48);
+      color: var(--ink);
+      outline: none;
+    }
+    .search:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(17,17,17,.08); }
+    .sort { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
+    .sort select { border: 0; border-bottom: 1px solid var(--ink); background: transparent; padding: 8px 20px 8px 0; color: var(--ink); outline: none; }
+    .filters { display: flex; gap: 8px; overflow-x: auto; padding: 0 0 24px; scrollbar-width: none; }
+    .filters::-webkit-scrollbar { display: none; }
+    .filter {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      transition: .2s ease;
+    }
+    .filter:hover, .filter.active { border-color: var(--ink); background: var(--ink); color: var(--white); }
+
+    .section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 14px 0 18px; }
+    .section-head h2 { margin: 0; font-family: "Noto Serif SC", serif; font-size: 25px; letter-spacing: -.04em; }
+    .section-head span { color: var(--muted); font-size: 11px; }
+    .news-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .news-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 355px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    .news-card:hover { transform: translateY(-4px); border-color: var(--ink); box-shadow: var(--shadow); }
+    .card-top { display: flex; justify-content: space-between; align-items: start; gap: 14px; }
+    .source { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; }
+    .source-icon { display: grid; place-items: center; width: 31px; height: 31px; border: 1px solid var(--ink); background: var(--ink); color: var(--signal); font-size: 10px; font-weight: 700; }
+    .verify { display: inline-flex; align-items: center; gap: 5px; color: #454541; font-size: 10px; white-space: nowrap; }
+    .verify:before { content: "✓"; display: grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: var(--signal); color: var(--ink); font-size: 9px; font-weight: 700; }
+    .card-date { margin-top: 20px; color: var(--muted); font-size: 11px; }
+    .news-card h3 { margin: 11px 0 12px; font-family: "Noto Serif SC", serif; font-size: 24px; line-height: 1.32; letter-spacing: -.045em; }
+    .news-card p { margin: 0; color: #4e4e4a; font-size: 13px; line-height: 1.75; }
+    .card-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+    .tag { padding: 5px 8px; background: var(--wash); color: #52524d; font-size: 10px; }
+    .card-bottom { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-top: auto; padding-top: 22px; }
+    .card-bottom a { font-size: 12px; font-weight: 600; text-underline-offset: 3px; }
+    .confidence { color: var(--muted); font-size: 10px; }
+    .empty { display: none; padding: 40px 20px; border: 1px dashed var(--line); color: var(--muted); text-align: center; }
+    .empty.show { display: block; }
+
+    .method {
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: 28px;
+      margin: 74px 0 28px;
+      padding: 28px 0;
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+    }
+    .method h2 { margin: 0; font-family: "Noto Serif SC", serif; font-size: 25px; letter-spacing: -.04em; }
+    .method p { margin: 0; color: #555550; font-size: 13px; line-height: 1.85; }
+    .channel-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
+    .channel { padding: 6px 9px; border: 1px solid var(--line); color: #555550; font-size: 10px; }
+    .channel.verified { border-color: var(--ink); color: var(--ink); }
+    .channel.verified:before { content: "● "; color: var(--signal); }
+    .channel.lead:before { content: "○ "; color: var(--muted); }
+
+    footer { display: flex; justify-content: space-between; gap: 20px; padding: 30px 0 50px; color: var(--muted); font-size: 11px; line-height: 1.7; }
+    footer strong { color: var(--ink); }
+    .footer-mark { color: var(--ink); font-family: "DM Mono", monospace; font-size: 11px; }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 28px, 620px); }
+      .topbar { min-height: 60px; }
+      .top-meta { display: none; }
+      .hero { display: block; padding: 54px 0 42px; }
+      .hero:after { right: -60px; top: 40%; width: 150px; height: 150px; }
+      h1 { font-size: clamp(42px, 14vw, 70px); }
+      .hero-lede { font-size: 14px; }
+      .hero-side { margin-top: 38px; }
+      .toolbar { display: block; padding-top: 18px; }
+      .sort { justify-content: flex-end; margin-top: 14px; }
+      .news-grid { grid-template-columns: 1fr; }
+      .news-card { min-height: 0; padding: 18px; }
+      .news-card h3 { font-size: 22px; }
+      .method { display: block; margin-top: 54px; }
+      .method p { margin-top: 16px; }
+      footer { display: block; }
+      footer .footer-mark { display: block; margin-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell topbar">
+    <a class="brand" href="#top" aria-label="AI Brief 首页">
+      <span class="brand-mark">AI</span>
+      <span class="brand-name">BRIEF / 手机 AI 资讯</span>
+    </a>
+    <div class="top-meta mono">Verified snapshot · 2026.08.25</div>
+  </header>
+
+  <main id="top" class="shell">
+    <section class="hero">
+      <div>
+        <div class="eyebrow mono"><span class="live-dot"></span> 今日编辑台 / edition 001</div>
+        <h1>把噪音，<br>压缩成判断。</h1>
+        <p class="hero-lede">一份为手机阅读而做的 AI 新闻简报。只收录可以回到原文、能说清时间与背景的更新，让你在几分钟内看懂今天行业真正发生了什么。</p>
+      </div>
+      <aside class="hero-side">
+        <div class="hero-note">
+          <div class="mono">EDITOR'S NOTE / 08.25</div>
+          <p>模型还在变快，真正的变化是：它们正在从“回答”向“执行工作”迁移。</p>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong>08</strong><span>本期已核验<br>资讯</span></div>
+          <div class="stat"><strong>09</strong><span>监测中的<br>公开渠道</span></div>
+          <div class="stat"><strong>1°</strong><span>原文优先<br>交叉核验</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section aria-label="资讯筛选">
+      <div class="toolbar">
+        <label class="search-wrap">
+          <span class="sr-only">搜索资讯</span>
+          <input class="search" id="search" type="search" placeholder="搜索模型、公司、关键词…" autocomplete="off">
+        </label>
+        <label class="sort mono">SORT
+          <select id="sort" aria-label="排序方式">
+            <option value="latest">最新优先</option>
+            <option value="oldest">最早优先</option>
+          </select>
+        </label>
+      </div>
+      <div class="filters" id="filters" role="group" aria-label="按来源筛选">
+        <button class="filter active" data-filter="all">全部 08</button>
+        <button class="filter" data-filter="OpenAI">OpenAI</button>
+        <button class="filter" data-filter="Google">Google</button>
+        <button class="filter" data-filter="Microsoft">Microsoft</button>
+        <button class="filter" data-filter="Anthropic">Anthropic</button>
+        <button class="filter" data-filter="百度">百度</button>
+        <button class="filter" data-filter="腾讯">腾讯</button>
+        <button class="filter" data-filter="知乎">知乎</button>
+        <button class="filter" data-filter="微博">微博</button>
+        <button class="filter" data-filter="微信公众号">微信公众号</button>
+      </div>
+    </section>
+
+    <section aria-labelledby="feed-title">
+      <div class="section-head">
+        <h2 id="feed-title">今日简报</h2>
+        <span class="mono" id="result-count">08 STORIES / VERIFIED</span>
+      </div>
+      <div class="news-grid" id="news-grid"></div>
+      <div class="empty" id="empty">没有匹配的资讯。换个关键词或清除来源筛选。</div>
+    </section>
+
+    <section class="method" aria-labelledby="method-title">
+      <div>
+        <h2 id="method-title">我们如何核验</h2>
+        <div class="channel-list" aria-label="监测渠道">
+          <span class="channel verified">OpenAI</span>
+          <span class="channel verified">Google</span>
+          <span class="channel verified">Microsoft</span>
+          <span class="channel verified">Anthropic</span>
+          <span class="channel verified">百度</span>
+          <span class="channel verified">腾讯</span>
+          <span class="channel verified">知乎</span>
+          <span class="channel verified">微博</span>
+          <span class="channel lead">微信公众号</span>
+        </div>
+      </div>
+      <div>
+        <p>本期先从官方公告、官方博客、企业 IR、认证账号与公开社区中抓取线索，再回到一级信源核对日期、产品名称、版本、数字和可用范围。知乎、微博、微信公众号适合作为发现线索的入口；如果无法回链到原公告，内容会停留在“待核验”，不会进入本期主 feed。</p>
+        <p style="margin-top:12px"><strong>当前状态：</strong>8 条已核验快照 · 最后更新 2026 年 8 月 25 日 · 下一步可接入 RSS、公众号人工录入和定时任务，变成真正的每日更新站点。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell">
+    <div><strong>AI Brief</strong><br>少一点热闹，多一点可验证的上下文。</div>
+    <div class="footer-mark">SOURCE FIRST / MOBILE FIRST / BLACK &amp; WHITE</div>
+  </footer>
+
+  <script>
+    const stories = [
+      {
+        date: '2026-08-19', displayDate: '08.19.2026', source: 'OpenAI', icon: 'OAI', category: '隐私 / 安全',
+        title: 'OpenAI 为前沿模型提供零数据保留，并预览私密安全处理',
+        context: '企业客户需要更强的数据控制，同时又希望安全系统能识别跨多次交互的风险。',
+        detail: 'OpenAI 表示，符合条件的 API 客户可以使用 Zero Data Retention；同时预览 Private Safety Processing，让自动化安全系统跨相关交互识别模式，而不让 OpenAI 员工接触客户内容。',
+        tags: ['ZDR', '企业安全', '官方公告'], confidence: '一级信源',
+        url: 'https://openai.com/index/offering-zero-data-retention-for-frontier-models/',
+        channels: ['OpenAI']
+      },
+      {
+        date: '2026-08-13', displayDate: '08.13.2026', source: 'Google', icon: 'G', category: '模型 / Agent',
+        title: 'Gemini 3.7 Flash：Google 的新一代工作型模型',
+        context: '模型竞争正在从“更大”转向“更适合长流程工作”，尤其是编码、知识工作和网页开发。',
+        detail: 'Google 将 Gemini 3.7 Flash 定位为面向编码与智能体的 workhorse，强调软件工程、知识工作和 Web 开发流程的改进，并以较低的入门价格推进开发者使用。',
+        tags: ['Gemini', '编码', '智能体'], confidence: '一级信源',
+        url: 'https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-3-7-flash/',
+        channels: ['Google']
+      },
+      {
+        date: '2026-08-11', displayDate: '08.11.2026', source: 'Microsoft', icon: 'MS', category: '模型 / Coding',
+        title: 'MAI-Code-1.1-Flash 进入 GitHub Copilot 生产环境',
+        context: '开发者更关心每次任务的等待时间、Token 消耗与代码能否真正留下来。',
+        detail: 'Microsoft AI 称，MAI-Code-1.1-Flash 相比 6 月发布的版本，Token 效率提升 25%，价格降至四分之一，并针对 CLI 任务和 .NET 表现做了优化。',
+        tags: ['GitHub Copilot', '效率', '模型'], confidence: '一级信源',
+        url: 'https://microsoft.ai/news/mai-code-1-1-flash-br-better-faster-at-a-quarter-of-the-cost/',
+        channels: ['Microsoft']
+      },
+      {
+        date: '2026-07-14', displayDate: '07.14.2026', source: 'Anthropic', icon: 'A', category: '教育 / 产品',
+        title: 'Claude for Teachers：把教师工作流接入课程与标准',
+        context: '教育场景的关键不是让 AI 替代老师，而是减少备课、差异化教学和数据整理的时间成本。',
+        detail: 'Anthropic 面向美国 K-12 教师推出 Claude for Teachers，提供课程标准连接、教学技能库和教育工具连接器，并声明相关数据不用于模型训练。',
+        tags: ['Claude', 'K-12', '隐私'], confidence: '一级信源',
+        url: 'https://www.anthropic.com/news/claude-for-teachers',
+        channels: ['Anthropic']
+      },
+      {
+        date: '2026-08-18', displayDate: '08.18.2026', source: '百度', icon: 'B', category: '财报 / AI 应用',
+        title: '百度二季度 AI 驱动业务收入达到 125 亿元',
+        context: '百度在财报中继续把 AI 应用、AI 云和自动驾驶放在增长叙事的核心位置。',
+        detail: '百度披露，2026 年第二季度 AI-powered Business 收入为人民币 125 亿元；同时提到 DuMate 企业版、文库与网盘的 AI 功能，以及 Apollo Go 的全球化进展。',
+        tags: ['AI 云', 'DuMate', 'Apollo Go'], confidence: 'IR / 官方财报',
+        url: 'https://ir.baidu.com/news-releases/news-release-details/baidu-announces-second-quarter-2026-results',
+        channels: ['百度']
+      },
+      {
+        date: '2026-08-14', displayDate: '08.14.2026', source: '腾讯', icon: 'TX', category: '云 / 开发者',
+        title: '腾讯云推出 CloudBase for Supabase，支持 pgvector 与 MCP 接入',
+        context: 'AI 应用开始从模型调用进入数据库、权限、身份与后端一体化的工程阶段。',
+        detail: '腾讯云产品动态显示，CloudBase for Supabase 以 PostgreSQL 为核心，提供 REST API、RLS、JWT、对象存储与云函数，并支持 pgvector 向量检索和 MCP 接入。',
+        tags: ['腾讯云', 'Supabase', 'MCP'], confidence: '官方产品动态',
+        url: 'https://cloud.tencent.com/product/events',
+        channels: ['腾讯']
+      },
+      {
+        date: '2026-08-07', displayDate: '08.07.2026', source: '知乎 / 阿里云', icon: 'ZH', category: '交叉核验 / 视频',
+        title: 'Wan3.0 开启公测：从多模态输入到 30 秒视频叙事',
+        context: '知乎的“一周 AI 大事件”提供了线索，但本条已回链到阿里云 Model Studio 与官方产品页核对。',
+        detail: '阿里云官方页面确认 Wan3.0 支持文本、图像、音频、视频和文档输入，单次最长生成 30 秒视频；知乎文章作为发现渠道，不作为唯一证据。',
+        tags: ['Wan3.0', '视频生成', '知乎线索'], confidence: '二级渠道 + 一级回链',
+        url: 'https://modelstudio.console.alibabacloud.com/model-releases/wan3.0-video',
+        channels: ['知乎']
+      },
+      {
+        date: '2026-07-13', displayDate: '07.13.2026', source: '微博 AI', icon: 'WB', category: '平台 / 创作',
+        title: '微博 AI 发起 VibeLab 创意赛，开放五条 AI 创作赛道',
+        context: 'AI 资讯不只有模型发布，也在进入内容平台的创作、流量和社区治理机制。',
+        detail: '微博 AI 官方账号宣布 VibeLab 创意赛，覆盖工作自动化、生活应用、视觉创作、社交观察与 AI For Good，活动周期为 7 月 13 日至 8 月 31 日。',
+        tags: ['微博 AI', 'VibeLab', 'AIGC'], confidence: '认证账号',
+        url: 'https://weibo.com/5777227559/R8sUS2EAG',
+        channels: ['微博']
+      }
+    ];
+
+    const grid = document.getElementById('news-grid');
+    const empty = document.getElementById('empty');
+    const count = document.getElementById('result-count');
+    const search = document.getElementById('search');
+    const sort = document.getElementById('sort');
+    let activeFilter = 'all';
+
+    function render() {
+      const query = search.value.trim().toLowerCase();
+      const direction = sort.value === 'latest' ? -1 : 1;
+      const filtered = stories
+        .filter(story => activeFilter === 'all' || story.channels.includes(activeFilter))
+        .filter(story => [story.title, story.context, story.detail, story.source, ...story.tags].join(' ').toLowerCase().includes(query))
+        .sort((a, b) => direction * a.date.localeCompare(b.date));
+
+      grid.innerHTML = filtered.map((story, index) => `
+        <article class="news-card" data-story="${story.date}">
+          <div class="card-top">
+            <div class="source"><span class="source-icon">${story.icon}</span><span>${story.source}</span></div>
+            <span class="verify">已核验</span>
+          </div>
+          <div class="card-date mono">${story.displayDate} · ${story.category}</div>
+          <h3>${story.title}</h3>
+          <p>${story.context}</p>
+          <div class="card-meta">${story.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
+          <div class="card-bottom">
+            <span class="confidence mono">${story.confidence}</span>
+            <a href="${story.url}" target="_blank" rel="noreferrer">阅读原文 ↗</a>
+          </div>
+        </article>
+      `).join('');
+      empty.classList.toggle('show', filtered.length === 0);
+      count.textContent = `${String(filtered.length).padStart(2, '0')} STORIES / VERIFIED`;
+    }
+
+    document.querySelectorAll('.filter').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.filter').forEach(item => item.classList.remove('active'));
+        button.classList.add('active');
+        activeFilter = button.dataset.filter;
+        render();
+      });
+    });
+    search.addEventListener('input', render);
+    sort.addEventListener('change', render);
+    render();
+  </script>
+</body>
+</html>
